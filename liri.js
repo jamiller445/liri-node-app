@@ -4,15 +4,13 @@
 
 require("dotenv").config();
 
-var keys = require("./keys.js");
+let keys = require("./keys.js");
 
-// Client id ---  7fd1694d8eda4d0190cbc4301c5a54a7
-// Client secret --- 5c9eddbf84fb46d48b1eeaee70b8d23d
-var Spotify = require('node-spotify-api');
-var spotify = new Spotify(keys.spotify);
+let Spotify = require('node-spotify-api');
+let spotify = new Spotify(keys.spotify);
 
-var util = require('util');
-var moment = require('moment');
+let util = require('util');
+let moment = require('moment');
 
 // liri commands to process
 // concert-this
@@ -20,11 +18,11 @@ var moment = require('moment');
 // movie-this
 // do-what-it-says
 
-var axios = require("axios");
-var myResponse = {};
-var op = process.argv[2];
-var repdata;
-var queryString;
+let axios = require("axios");
+let myResponse = {};
+let op = process.argv[2];
+let repdata;
+let queryString;
 
 // var queryUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
 // var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
@@ -49,7 +47,7 @@ function formatSong() {
     console.log(repdata.data);
 }
 
-function formatConcert() {
+function formatConcert(repdata) {
     
     // console.log(repdata);
     // console.log(util.inspect(repdata.data[0]));
@@ -94,8 +92,8 @@ function getData() {
         // formatConcert();
         // console.log(util.inspect(response.data[0].venue));
         // console.log(util.inspect(response.data[0].offers));
-        repdata = response;
-        formatConcert();
+        // repdata = response;
+        formatConcert(response);
         // console.log(JSON.stringify(response));
     }
 
@@ -149,17 +147,17 @@ function getSong() {
 
 switch (op) {
     case "movie-this":
-        var movieName = process.argv[3];
-        var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+        movieName = process.argv[3];
+        queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
         getData();
     break;
     case "concert-this":
-        var artist = process.argv[3];
-        var queryUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
+        artist = process.argv[3];
+        queryUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
         getData();
     break;
     case "spotify-this-song":
-        var song = process.argv[3];
+        song = process.argv[3];
         // queryString = "track:" + "\"The+Sign\"";
         queryString = "track:" + "\"" + song + "\"";
         console.log("queryString= " + queryString)
