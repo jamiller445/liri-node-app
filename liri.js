@@ -5,15 +5,16 @@
 require("dotenv").config();
 
 // fs is a core Node package for reading and writing files
-let fs = require("fs");
+const fs = require("fs");
+const keys = require("./keys.js");
 
-let keys = require("./keys.js");
+const Spotify = require('node-spotify-api');
+const spotify = new Spotify(keys.spotify);
 
-let Spotify = require('node-spotify-api');
-let spotify = new Spotify(keys.spotify);
+const util = require('util');
+const moment = require('moment');
 
-let util = require('util');
-let moment = require('moment');
+const readline = require('readline');
 
 // liri commands to process
 // concert-this
@@ -30,8 +31,7 @@ let queryString;
 // var queryUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
 // var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
 
-// Then create a request with axios to the queryUrl for Bands in Town Artist Events API
-// ...
+
 
 function formatMovie(repdata) {
     console.log("movie title= " + repdata.data.Title);
@@ -98,11 +98,6 @@ function getData() {
         // repdata = response;
         formatMovie(response);
     } else if (op === "concert-this"){
-        // repdata = response;
-        // formatConcert();
-        // console.log(util.inspect(response.data[0].venue));
-        // console.log(util.inspect(response.data[0].offers));
-        // repdata = response;
         formatConcert(response);
         // console.log(JSON.stringify(response));
     }
@@ -117,30 +112,17 @@ function getSong() {
     spotify.search({ type: 'track', query: queryString, limit: '12' })
     // spotify.search({ type: 'track', query: 'track:"The+Sign"', limit: '12' })
   .then(function(response) {
-    // console.log("*************** spotify");
-    // console.log(response.artists.items);
-    // console.log(response.tracks.items);
-    // console.log(response.tracks);
-    // console.log("Looking for album **********");
-    // console.log(response.tracks.items[i].album);
-
     formatSong(response);
-
-    // for ( i=0; i<response.tracks.items.length; i++) {
-    //     console.log("******** Keepers *******");
-    //     console.log(response.tracks.items[i].name);
-    //     console.log(response.tracks.items[i].preview_url);
-    //     console.log(response.tracks.items[i].artists[0].name);
-    //     console.log(response.tracks.items[i].album.name);      
-    // }
-    
-    //  console.log(response.tracks.items[0].artists[0].name);
-    //  console.log(response.tracks.items[1].artists[0].name);
     })
   .catch(function(err) {
     console.log(err);
   });
 }
+
+const rl = readline.createInterface({
+    input: fs.createReadStream('random.txt'),
+    crlfDelay: Infinity
+  });
 
 function doIt(){
     fs.readFile("random.txt", "utf8", function(error, data) {
@@ -149,21 +131,40 @@ function doIt(){
         if (error) {
           return console.log(error);
         }
-      
+          
         // We will then print the contents of data
         console.log(data);
-      
+     
         // Then split it by commas (to make it more readable)
         var dataArr = data.split(",");
       
         // We will then re-display the content as an array for later use.
         console.log(dataArr);
-      
-      });
-      
 
-}
+        console.log("type= " + typeof dataArr[0]);
 
+        switch (dataArr[0]) {
+            case "spotify-this-song":
+                op = dataArr[0];
+                song = dataArr[1];
+                queryString = "track:" + "\"" + song + "\"";
+                getSong();
+                break;
+            case "movie-this":
+                op = dataArr[0];
+                movieName = dataArr[1];
+                queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+                getData();
+                break;
+            case  "concert-this":
+                op = dataArr[0];
+                artist = dataArr[1];
+                queryUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
+                getData();
+        }
+    });
+    }
+    
 switch (op) {
     case "movie-this":
         movieName = process.argv[3];
@@ -186,30 +187,4 @@ switch (op) {
          console.log("running commands from random.txt");
          doIt();
 }
-
-
-
-// Then create a request with axios to the queryUrl
-// ...
-// axios.get(queryUrl)
-//   .then(function (response) {
-    
-//     console.log(response.data.Released);
-    
-//         myResponse = response;
-
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
-
-// If the request with axios is successful
-// ...
-
-// console.log("******* myResponse=" + myResponse.data);
- 
-// console.log("******* myResponse=" + JSON.stringify(myResponse.data.Released));
-
-// Then log the Release Year for the movie
-// ...
 
