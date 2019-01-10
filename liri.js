@@ -4,6 +4,9 @@
 
 require("dotenv").config();
 
+// fs is a core Node package for reading and writing files
+let fs = require("fs");
+
 let keys = require("./keys.js");
 
 let Spotify = require('node-spotify-api');
@@ -30,7 +33,7 @@ let queryString;
 // Then create a request with axios to the queryUrl for Bands in Town Artist Events API
 // ...
 
-function formatMovie() {
+function formatMovie(repdata) {
     console.log("movie title= " + repdata.data.Title);
     console.log("movie release year= " + repdata.data.Year);
     console.log("movie IMDB rating= " + repdata.data.imdbRating);
@@ -43,12 +46,19 @@ function formatMovie() {
     // console.log(repdata.data);
 }
 
-function formatSong() {
-    console.log(repdata.data);
+function formatSong(repdata) {
+    // console.log(repdata);
+    for ( i=0; i<repdata.tracks.items.length; i++) {
+        console.log("Song Info: ");
+        console.log("Artist Name: " + repdata.tracks.items[i].artists[0].name);
+        console.log("Song Name: " + repdata.tracks.items[i].name);
+        console.log("Song Preview Link: " + repdata.tracks.items[i].preview_url);       
+        console.log("Album Name: " + repdata.tracks.items[i].album.name);  
+        console.log("");    
+    }
 }
 
-function formatConcert(repdata) {
-    
+function formatConcert(repdata) {   
     // console.log(repdata);
     // console.log(util.inspect(repdata.data[0]));
     for (i=0; i<repdata.data.length; i++) {
@@ -85,8 +95,8 @@ function getData() {
     if (op === "movie-this") {
         // console.log(response.data.Year)
         // repdata = response.data.Year;
-        repdata = response;
-        formatMovie();
+        // repdata = response;
+        formatMovie(response);
     } else if (op === "concert-this"){
         // repdata = response;
         // formatConcert();
@@ -96,8 +106,6 @@ function getData() {
         formatConcert(response);
         // console.log(JSON.stringify(response));
     }
-
-
   })
   .catch(function (error) {
     console.log(error);
@@ -109,21 +117,22 @@ function getSong() {
     spotify.search({ type: 'track', query: queryString, limit: '12' })
     // spotify.search({ type: 'track', query: 'track:"The+Sign"', limit: '12' })
   .then(function(response) {
-    console.log("*************** spotify");
+    // console.log("*************** spotify");
     // console.log(response.artists.items);
     // console.log(response.tracks.items);
     // console.log(response.tracks);
-    for ( i=0; i<response.tracks.items.length; i++) {
-        // console.log("Looking for album **********");
+    // console.log("Looking for album **********");
+    // console.log(response.tracks.items[i].album);
 
-        // console.log(response.tracks.items[i].album);
+    formatSong(response);
 
-        console.log("******** Keepers *******");
-        console.log(response.tracks.items[i].name);
-        console.log(response.tracks.items[i].preview_url);
-        console.log(response.tracks.items[i].artists[0].name);
-        console.log(response.tracks.items[i].album.name);      
-    }
+    // for ( i=0; i<response.tracks.items.length; i++) {
+    //     console.log("******** Keepers *******");
+    //     console.log(response.tracks.items[i].name);
+    //     console.log(response.tracks.items[i].preview_url);
+    //     console.log(response.tracks.items[i].artists[0].name);
+    //     console.log(response.tracks.items[i].album.name);      
+    // }
     
     //  console.log(response.tracks.items[0].artists[0].name);
     //  console.log(response.tracks.items[1].artists[0].name);
@@ -133,17 +142,27 @@ function getSong() {
   });
 }
 
-// Grab or assemble the movie name and store it in a variable called "movieName"
-// var movieName = "Forrest Gump";
-// ...
+function doIt(){
+    fs.readFile("random.txt", "utf8", function(error, data) {
 
+        // If the code experiences any errors it will log the error to the console.
+        if (error) {
+          return console.log(error);
+        }
+      
+        // We will then print the contents of data
+        console.log(data);
+      
+        // Then split it by commas (to make it more readable)
+        var dataArr = data.split(",");
+      
+        // We will then re-display the content as an array for later use.
+        console.log(dataArr);
+      
+      });
+      
 
-// Then run a request with axios to the OMDB API with the movie specified
-// var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
-
-
-// This line is just to help us debug against the actual URL.
-// console.log(queryUrl);
+}
 
 switch (op) {
     case "movie-this":
@@ -162,9 +181,12 @@ switch (op) {
         queryString = "track:" + "\"" + song + "\"";
         console.log("queryString= " + queryString)
         getSong();
+        break;
+    case "do-what-it-says":
+         console.log("running commands from random.txt");
+         doIt();
 }
 
-// getSong();
 
 
 // Then create a request with axios to the queryUrl
