@@ -34,14 +34,14 @@ let queryString;
 
 
 function formatMovie(repdata) {
-    console.log("movie title= " + repdata.data.Title);
-    console.log("movie release year= " + repdata.data.Year);
-    console.log("movie IMDB rating= " + repdata.data.imdbRating);
-    console.log("movie rotten tomaoes rating= " + repdata.data.Ratings[1].Source.Value);
-    console.log("movie country where produced= " + repdata.data.Country);
-    console.log("movie language " + repdata.data.Language);
-    console.log("movie plot= " + repdata.data.Plot);
-    console.log("movie actors in the " + repdata.data.Title + " are " + repdata.data.Actors);
+    console.log("movie title:  " + repdata.data.Title);
+    console.log("movie release year:  " + repdata.data.Year);
+    console.log("movie IMDB rating:  " + repdata.data.imdbRating);
+    console.log("movie rotten tomaoes rating:  " + repdata.data.Ratings[1].Source.Value);
+    console.log("movie country where produced:  " + repdata.data.Country);
+    console.log("movie language: " + repdata.data.Language);
+    console.log("movie plot:  " + repdata.data.Plot);
+    console.log("movie actors in the:  " + repdata.data.Title + " are " + repdata.data.Actors);
     console.log("");
     // console.log(repdata.data);
 }
@@ -68,20 +68,8 @@ function formatConcert(repdata) {
         console.log("concert location= " + util.inspect(repdata.data[i].venue.city).replace(/'/g, "") +
                     ", " +  util.inspect(repdata.data[i].venue.country).replace(/'/g, ""));
                     cookedDate = util.inspect(repdata.data[i].datetime).replace(/'/g, "");
-                    // dt = rawDate.split("T");
-                    // console.log(dt[0]);
-                    // console.log(dt[1]);
-                    // dt = rawDate;
-                    // cookedDate = dt.replace(/'/g, "");
-                    // console.log("cookedDate= " + cookedDate);
                     displayDate = moment(cookedDate).format("MM/DD/YYYY  hh:mm a");
                     // console.log(newdate);
-
-
-        // console.log("isValid= " + moment(util.inspect(repdata.data[i].datetime)).isValid());
-        // rawDate = util.inspect(repdata.data[i].datetime);
-        // cookedDate = moment(rawDate).format("YYYY Do MM");
-        // console.log("cookedDate= " + cookedDate);
         console.log("concert date = " + displayDate);
         console.log("");
     }
@@ -93,9 +81,7 @@ function getData() {
     // console.log("console log= " + response);
     // console.log(response.data.Released);
     if (op === "movie-this") {
-        // console.log(response.data.Year)
-        // repdata = response.data.Year;
-        // repdata = response;
+        
         formatMovie(response);
     } else if (op === "concert-this"){
         formatConcert(response);
@@ -103,26 +89,25 @@ function getData() {
     }
   })
   .catch(function (error) {
-    console.log(error);
+    // console.log("Error --  " + error);
+    console.log("Error --  No data returned from database." );
   });
 }
 
 function getSong() {
     // spotify.search({ type: 'track', query: 'track:"song + ", limit: '12' })
-    spotify.search({ type: 'track', query: queryString, limit: '12' })
+    // spotify.search({ type: 'track', query: queryString, limit: '12' })
+    // spotify.search({ type: 'track', query: queryString })
     // spotify.search({ type: 'track', query: 'track:"The+Sign"', limit: '12' })
+    spotify.search({ type: 'track', query: queryString, limit: '12' })
   .then(function(response) {
     formatSong(response);
     })
   .catch(function(err) {
-    console.log(err);
+    // console.log(err);
+    console.log("Error --  No data returned from Spotify.");
   });
 }
-
-const rl = readline.createInterface({
-    input: fs.createReadStream('random.txt'),
-    crlfDelay: Infinity
-  });
 
 function doIt(){
     fs.readFile("random.txt", "utf8", function(error, data) {
@@ -164,12 +149,19 @@ function doIt(){
         }
     });
     }
-    
+
+if (process.argv.length < 3) { op = "false";}    
 switch (op) {
     case "movie-this":
-        movieName = process.argv[3];
-        queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
-        getData();
+    if (process.argv.length < 4) { 
+        movieName = "Mr+Nobody";
+    }
+    else {
+    movieName = process.argv[3];
+    }
+    queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+    console.log(queryUrl);
+    getData();
     break;
     case "concert-this":
         artist = process.argv[3];
@@ -177,14 +169,24 @@ switch (op) {
         getData();
     break;
     case "spotify-this-song":
-        song = process.argv[3];
         // queryString = "track:" + "\"The+Sign\"";
+        if (process.argv.length < 4) { 
+            song = "The Sign";
+            queryString = "track:" + "\"The+Sign\"" + "artist:" + "Ace+of+Base";
+            // console.log(queryString);
+        }
+        else {
+        song = process.argv[3];
         queryString = "track:" + "\"" + song + "\"";
-        console.log("queryString= " + queryString)
+        // console.log("queryString= " + queryString)
+        }
         getSong();
         break;
     case "do-what-it-says":
          console.log("running commands from random.txt");
          doIt();
+         break;
+    case "false":
+        console.log("node liri: Usage: movie-this | concert-this | spotify-this-song | do-what-it-says");
 }
 
