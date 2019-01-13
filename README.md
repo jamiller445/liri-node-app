@@ -40,16 +40,24 @@ Enter the following command line:
 
 node liri.js do-what-it-says
 
-* There are default searches set for both the movie-this and spotify-this-song commands if no movie
-or song is specified on the command line. 
+_There are default searches set for both the_ **movie-this and spotify-this-song** _commands if no movie
+or song is specified on the command line._
 
 #### Screen Shots
 
+**movie-this**
 ![](/images/movie-this.png)
+
+**spotify-this**
 ![](/images/spotify-this-song.png)
+
+**concert-this**
 ![](/images/concert-this.png)
+
+**do-what-it-says**
 ![](/images/do-what-it-says.png)
 
+**movie-this and concert-this Defaults**
 ![](/images/movie-this-default.png)
 ![](/images/concert-this-default.png)
 
