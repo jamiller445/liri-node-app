@@ -59,7 +59,7 @@ or song is specified on the command line._
 
 **movie-this and concert-this Defaults**
 ![](/images/movie-this-default.png)
-![](/images/concert-this-default.png)
+![](/images/spotify-this-song-default.png)
 
 
 
